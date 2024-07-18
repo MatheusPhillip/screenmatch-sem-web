@@ -9,10 +9,7 @@ import br.com.alura.screenmatch.service.ConverteDados;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Principal {
@@ -60,11 +57,12 @@ public class Principal {
                 .flatMap(t -> t.episodios().stream())
                 .collect(Collectors.toList());
 
-        System.out.println("\n\n Top 5 episódios:\n");
+        System.out.println("\n\n Top 10 episódios:\n");
         dadosEpisodios.stream()
                 .filter(e -> !e.avaliacao().equalsIgnoreCase("N/A"))
                 .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())
-                .limit(5)
+                .limit(10)
+                .map(e -> e.titulo().toUpperCase())
                 .forEach(System.out::println);
 
         List<Episodio> episodios = temporadas.stream()
@@ -73,6 +71,21 @@ public class Principal {
                 ).collect(Collectors.toList());
 
         episodios.forEach(System.out::println);
+
+        System.out.println("Informe um trecho do título do episódio: ");
+        var trechoDoTitulo = leitor.nextLine();
+
+        Optional<Episodio> episodioProcurado = episodios.stream()
+                .filter(e -> e.getTitulo().toUpperCase().contains(trechoDoTitulo.toUpperCase()))
+                .findFirst();
+
+        if(episodioProcurado.isPresent()){
+            System.out.println("Episódio encontrado!");
+            System.out.println("Temporada: " + episodioProcurado.get().getTemporada());
+            System.out.println("Titulo completo: " + episodioProcurado.get().getTitulo());
+        }else{
+            System.out.println("Episódio não encontrado!");
+        }
 
         System.out.println("A partir de que ano você deseja ver os episódios? ");
         var ano = leitor.nextInt();
